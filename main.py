@@ -1,31 +1,41 @@
-from PIL import Image
 import argparse
 import os
-import glob
 
-def main(img_path):
-    img = Image.open(img_path)
-    print("FileName : ",img.filename,"\nImageSize : ",img.size,sep = "")
-    a = img.size[1]
-    b = (img.size[0] - a) / 2
-    c = a + b
-    print (a,b,c)
-    artwork = img.crop((b,0,c,a))
-    print(b,0,c,a)
-    artwork.save(os.path.basename(img_path))
-    print(f"FileName : {os.path.basename(img_path)}\nImageSize : {artwork.size}")
+from PIL import Image, UnidentifiedImageError
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--file")
-parser.add_argument("--folder")
-args = parser.parse_args()
+def main(file):
+    try:
+        img = Image.open(file)
+    except UnidentifiedImageError:
+        print("ERROR!!")
+        return
+    print(f"FileName: , {os.path.basename(file)}\nImageSize: {img.size}", sep="")
+    width, height = img.size
+    if width > height:  # Wide
+        space = int((width - height) / 2)
+        hs = height + space
+        print(height, space, hs, sep=", ")
+        artwork = img.crop((space, 0, hs, height))
+        print(space, 0, hs, height, sep=", ")
+    else:  # Tall
+        space = int((height - width) / 2)
+        ws = width + space
+        print(width, space, ws, sep=", ")
+        artwork = img.crop((0, space, width, ws))
+        print(0, space, width, ws, sep=", ")
+    artwork.save(os.path.join("./img", os.path.basename(file)))
+
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-if args.folder != None:
-    imgs = glob.glob(args.folder + "\*.jpg")
-    for img in imgs:
-        main(img)
-else:
-    main(args.file)
+if not os.path.exists("./img"):
+    os.mkdir("./img")
+
+parser = argparse.ArgumentParser()
+parser.add_argument("files", nargs="*")
+args = parser.parse_args()
+
+for file in args.files:
+    if os.path.isfile(file):
+        main(file)
