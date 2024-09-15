@@ -24,13 +24,14 @@ def main(file):
         print(width, space, ws, sep=", ")
         print(0, space, width, ws, sep=", ")
         crop_box = (0, space, width, ws)
-    path = os.path.join("./img", os.path.basename(file))
+    path = os.path.join(dir_, os.path.basename(file))
     if os.path.splitext(file)[1] == ".gif":
         artwork = gif(img, crop_box)
         artwork[0].save(path, save_all=True, append_images=artwork[1:], duration=1000 / img.info["duration"], loop=0)
     else:
         artwork = img.crop(crop_box)
         artwork.save(path)
+
 
 def gif(img, crop_box):
     cropped_imgs = []
@@ -40,10 +41,12 @@ def gif(img, crop_box):
         cropped_imgs.append(cropped)
     return cropped_imgs
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-if not os.path.exists("./img"):
-    os.mkdir("./img")
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+dir_ = "./img/crop"
+
+if not os.path.exists(dir_):
+    os.mkdir(dir_)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("files", nargs="*")

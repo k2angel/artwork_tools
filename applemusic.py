@@ -5,8 +5,6 @@ import requests
 import win32clipboard
 from PIL import Image
 
-dir_ = "./img/applemusic"
-
 
 def main(url):
     # 画像urlを取得
@@ -20,8 +18,6 @@ def main(url):
     img_res = requests.get(img_url)
     img = Image.open(BytesIO(img_res.content))
     # 画像を保存
-    if not os.path.exists(dir_):
-        os.makedirs(dir_)
     img.save(os.path.join(dir_, os.path.basename(img_url)))
     print("saved!")
     # 画像をクリップボードにコピー
@@ -35,7 +31,11 @@ def main(url):
     print("clipped!")
 
 
+dir_ = "./img/applemusic"
+
 if __name__ == "__main__":
+    if not os.path.exists(dir_):
+        os.makedirs(dir_)
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     while True:
         url = input("[URL] > ")
